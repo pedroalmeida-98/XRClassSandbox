@@ -12,6 +12,8 @@
   <script type="application/javascript" src="static/aframe/aframe-extras.js"></script>
   <script type="application/javascript" src="static/aframe/aframe-physics-system.js"></script>
   <script type="application/javascript" src="static/aframe/aframe-physics-extras.js"></script>
+  <script type="application/javascript" src="static/aframe/super-hands.js"></script>
+  
   
   <link
     rel="stylesheet"
@@ -21,47 +23,45 @@
 </head>
 
 <body style="margin: 0; overflow: hidden;">
-<a-scene physics="; gravity: -9.8" auto-enter-vr
+<a-scene physics="gravity: -9.8" auto-enter-vr
 inspector="url: https://cdn.jsdelivr.net/gh/aframevr/aframe-inspector@master/dist/aframe-inspector.min.js">
   <a-assets>
-    
-     <a-mixin id="controller"
-                 super-hands="colliderEvent: collisions;
+    <a-mixin id="pointer" raycaster="showLine: true; objects: .interactable"
+                 collision-filter="collisionForces: false"
+                 static-body="shape: sphere; sphereRadius: 0.001"
+                 super-hands="colliderEvent: raycaster-intersection;
                               colliderEventProperty: els;
-                              colliderEndEvent: collisions;
-                              colliderEndEventProperty: clearedEls;
-                              grabStartButtons: gripdown, pointdown, triggerdown;
-                              grabEndButtons: gripup, pointup, triggerup"
-                 static-body="shape: sphere; sphereRadius: 0.11"
-                 physics-collider
-                 collision-filter = "collidesWith: default, red, green, blue;
-                                     collisionForces: false">
+                              colliderEndEvent:raycaster-intersection-cleared;
+                              colliderEndEventProperty: clearedEls;"></a-mixin>
+    </a-assets>
+    <a-mixin id="right-control" mixin="pointer" raycaster
+                 vive-controls="hand: right" oculus-touch-controls="hand: right"
+                 windows-motion-controls="hand: right"
+                 gearvr-controls daydream-controls oculus-go-controls>
     </a-mixin>
-    <a-mixin id="interactable"  ></a-mixin>
+    <a-mixin id="left-control" mixin="pointer" raycaster
+                 vive-controls="hand: left" oculus-touch-controls="hand: left"
+                 windows-motion-controls="hand: left">
+    </a-mixin>
+    <a-mixin id="interactable" class="interactable" grabbable droppable hoverable dynamic-body ></a-mixin>
     <a-asset-item id="stage" src="static/gltf/classroom.gltf"></a-asset-item>
     <a-asset-item id="chair" src="static/gltf/chair.glb"></a-asset-item>
     <a-asset-item id="table" src="static/gltf/table.glb"></a-asset-item>
+    <a-asset-item id="fnm" src="static/gltf/floornavmesh.gltf"></a-asset-item>
     
-  </a-assets>
   <a-entity gltf-model="#stage" position="0 0 0"></a-entity>
-  <a-entity geometry="primitive: box; width: 19.8; height: 0.2; depth: 9.8" material="transparent: true; opacity: 0"></a-entity>
-  <a-entity geometry="primitive: box; width: 19.8; height: 0.21; depth: 9.8" material="color: blue; transparent: true; opacity: 0" position="0 0 0" nav-mesh></a-entity>
-  <a-gltf-model id="board" src="static/gltf/board.gltf" position="0 0 0" static-body ></a-gltf-model>
-  <a-entity  gltf-model="#chair" position="4 .2 3" rotation="0 -90 0" scale= "0.3 0.3 0.3"></a-entity>
-  <a-entity  gltf-model="#table" position="4 .2 3" rotation="0 -90 0" scale= "0.3 0.3 0.3"></a-entity>
-  <a-entity  gltf-model="#chair" position="4 .2 0" rotation="0 -90 0" scale= "0.3 0.3 0.3"></a-entity>
-  <a-entity  gltf-model="#table" position="4 .2 0" rotation="0 -90 0" scale= "0.3 0.3 0.3"></a-entity>
-  <a-entity  gltf-model="#chair" position="4 .2 -3" rotation="0 -90 0" scale= "0.3 0.3 0.3"></a-entity>
-  <a-entity  gltf-model="#table" position="4 .2 -3" rotation="0 -90 0" scale= "0.3 0.3 0.3"></a-entity>
-
-
-  <a-entity id="rig" movement-controls="constrainToNavMesh: true">
+  <a-entity gltf-model="#fnm" position="0 0 0" nav-mesh static-body></a-entity>
+  
+  <a-box mixin="interactable" position="1 1 0" material="color: red"></a-box>
+  <a-entity id="rig" progressive-controls movement-controls="constrainToNavMesh: true">
+        <a-text scale=".3 .3 .3" position="-1.2 2.3 -1" value="Made by Maria Fernanda Ribeiro e Pedro Henrique Almeida. Powered by AI-SPARK laboratory."></a-text>
     <a-entity camera position="0 1.6 0"></a-entity>
+<!--     <a-entity id="rightHand" hand-controls="hand: right" mixin="controller"></a-entity> -->
+    <a-entity id="rightHand" mixin="right-control"></a-entity>
+<!--     <a-entity id="leftHand" hand-controls="hand: left" mixin="controller"></a-entity> -->
+    <a-entity id="leftHand" mixin="left-control"></a-entity>
   </a-entity>
-  <a-entity progressive-controls>
-    <a-entity id="rightHand" hand-controls="right" mixin="controller"></a-entity>
-    <a-entity id="leftHand" hand-controls="left" mixin="controller"></a-entity>
-  </a-entity>
+  
 </a-scene>
 </body>
 </html>
